@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESO Logs Client Sandbox</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f5f8fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 190px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: Consolas, "Courier New", monospace;
+      resize: vertical;
+      background: #fbfdff;
+    }
+
+    .label {
+      margin: 14px 0 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    button {
+      margin-top: 12px;
+      border: 0;
+      border-radius: 6px;
+      padding: 10px 14px;
+      background: #2563eb;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .response {
+      margin-top: 12px;
+      border: 1px solid #d1d5db;
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 10px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      font-family: Consolas, "Courier New", monospace;
+      min-height: 150px;
+    }
+
+    .small {
+      color: #4b5563;
+      font-size: 0.9rem;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ESO Logs Browser Client (Sandbox)</h1>
+    <p class="small">This app loads an access token from <code>config.local.js</code> at the repo root.</p>
+
+    <div id="status" class="status">Loading configuration...</div>
+
+    <div class="label">GraphQL Query</div>
+    <textarea id="queryInput">query IntrospectionQuery {
+  __schema {
+    queryType { name }
+    mutationType { name }
+    subscriptionType { name }
+    types {
+      name
+      kind
+    }
+  }
+}</textarea>
+
+    <div class="label">Variables JSON (optional)</div>
+    <textarea id="variablesInput" style="min-height: 90px;">{}</textarea>
+
+    <button id="runButton" type="button">Run Query</button>
+
+    <pre id="response" class="response">No request executed yet.</pre>
+  </div>
+
+  <script
+    src="../config.local.js"
+    onerror="document.getElementById('status').textContent='Config load error: could not load ../config.local.js. If you are serving only the sandbox folder, move server root to project root.'"
+  ></script>
+  <script
+    src="./app.js"
+    defer
+    onerror="document.getElementById('status').textContent='App load error: could not load sandbox/app.js.'"
+  ></script>
+</body>
+</html>

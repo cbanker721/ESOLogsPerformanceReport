@@ -1,0 +1,638 @@
+{
+  "data": {
+    "reportData": {
+      "name": "ReportData",
+      "description": "The ReportData object enables the retrieval of single reports or filtered collections of reports.",
+      "fields": [
+        {
+          "name": "report",
+          "description": "Obtain a specific report by its code.",
+          "args": [
+            {
+              "name": "code",
+              "description": "Required. The code of a single report to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "allowUnlisted",
+              "description": "Optional. Whether to allow viewing of unlisted logs. If you have a multi-user application where you cache codes, set this to true to avoid accidentally giving away unlisted codes to unauthorized users.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Report",
+            "ofType": null
+          }
+        },
+        {
+          "name": "reports",
+          "description": "A set of reports for a specific guild, guild tag, or user.",
+          "args": [
+            {
+              "name": "endTime",
+              "description": "Optional. A UNIX timestamp with millisecond precision representing the end time for a report range. If omitted, defaults to the current time in milliseconds.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            {
+              "name": "guildID",
+              "description": "Optional. The ID of a specific guild. Reports from that guild will be fetched.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "guildName",
+              "description": "Optional. The name of a specific guild. Must be used in conjunction with guildServerSlug and guildServerRegion to uniquely identify a guild.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "guildServerSlug",
+              "description": "Optional. The name of a specific guild. Must be used in conjunction with guildName and guildServerRegion to uniquely identify a guild.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "guildServerRegion",
+              "description": "Optional. The region for a specific guild. Must be used in conjunction with guildName and guildServerRegion to uniquely identify a guild.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "guildTagID",
+              "description": "Optional. The ID of a specific guild tag. Reports from that guild tag will be fetched. This will take precedence over all other guild arguments.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "userID",
+              "description": "Optional. The ID of a specific user. Reports from that user's personal logs will be fetched.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "limit",
+              "description": "Optional. The number of characters to retrieve per page. If omitted, defaults to 100. The maximum allowed value is 100, and minimum allowed value is 1.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "page",
+              "description": "Optional. The page of paginated data to retrieve. If omitted, defaults to the first page.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "startTime",
+              "description": "Optional. A UNIX timestamp with millisecond precision representing a start time for a report range. If omitted, defaults to 0.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            {
+              "name": "zoneID",
+              "description": "Optional. The ID of a specific zone to filter to. Reports with that zone as their default will be included.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "gameZoneID",
+              "description": "Optional. The ID of a specific game zone to filter reports to.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "ReportPagination",
+            "ofType": null
+          }
+        }
+      ]
+    },
+    "characterData": {
+      "name": "CharacterData",
+      "description": "The CharacterData object enables the retrieval of single characters or filtered collections of characters.",
+      "fields": [
+        {
+          "name": "character",
+          "description": "Obtain a specific character either by id or by name/server_slug/server_region.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Optional. The ID of a single character to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "name",
+              "description": "Optional. The name of a specific character. Must be used in conjunction with serverSlug and serverRegion to uniquely identify a character.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverSlug",
+              "description": "Optional. The slug of a specific server. Must be used in conjunction with name and serverRegion to uniquely identify a character.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverRegion",
+              "description": "Optional. The region for a specific character. Must be used in conjunction with name and serverRegion to uniquely identify a character.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Character",
+            "ofType": null
+          }
+        },
+        {
+          "name": "characters",
+          "description": "A collection of characters for a specific guild.",
+          "args": [
+            {
+              "name": "guildID",
+              "description": "Required. The ID of a specific guild. Characters from that guild will be fetched.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "limit",
+              "description": "Optional. The number of characters to retrieve per page. If omitted, defaults to 100. The maximum allowed value is 100, and minimum allowed value is 1.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "page",
+              "description": "Optional. The page of paginated data to retrieve. If omitted, defaults to the first page.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "CharacterPagination",
+            "ofType": null
+          }
+        }
+      ]
+    },
+    "guildData": {
+      "name": "GuildData",
+      "description": "The GuildData object enables the retrieval of single guilds or filtered collections of guilds.",
+      "fields": [
+        {
+          "name": "guild",
+          "description": "Obtain a specific guild either by id or by name/serverSlug/serverRegion.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Optional. The ID of a single guild to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "name",
+              "description": "Optional. The name of a specific guild. Must be used in conjunction with serverSlug and serverRegion to uniquely identify a guild.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverSlug",
+              "description": "Optional. The name of a specific guild. Must be used in conjunction with name and serverRegion to uniquely identify a guild.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverRegion",
+              "description": "Optional. The region for a specific guild. Must be used in conjunction with name and serverRegion to uniquely identify a guild.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Guild",
+            "ofType": null
+          }
+        },
+        {
+          "name": "guilds",
+          "description": "The set of all guilds supported by the site. Can be optionally filtered to a specific server id.",
+          "args": [
+            {
+              "name": "limit",
+              "description": "Optional. The number of guilds to retrieve per page. If omitted, defaults to 100. The maximum allowed value is 100, and minimum allowed value is 1.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "page",
+              "description": "Optional. The page of paginated data to retrieve. If omitted, defaults to the first page.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverID",
+              "description": "Optional. The ID of a specific server. If present, only guilds from that server (and any connected servers) will be fetched.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverSlug",
+              "description": "Optional. The slug for a specific server. Must be used in conjunction with serverRegion to uniquely identify a server. Only guilds from that server (and any connected servers) will be fetched.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "serverRegion",
+              "description": "Optional. The region for a specific server. Must be used in conjunction with serverSlug to uniquely identify a server. Only guilds from that server (and any connected servers) will be fetched.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "GuildPagination",
+            "ofType": null
+          }
+        }
+      ]
+    },
+    "worldData": {
+      "name": "WorldData",
+      "description": "The world data object contains collections of data such as expansions, zones, encounters, regions, subregions, etc.",
+      "fields": [
+        {
+          "name": "encounter",
+          "description": "Obtain a specific encounter by id.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Required. Specify a single encounter ID to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Encounter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "expansion",
+          "description": "A single expansion obtained by ID.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Required. The ID of a single expansion to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Expansion",
+            "ofType": null
+          }
+        },
+        {
+          "name": "expansions",
+          "description": "The set of all expansions supported by the site.",
+          "args": [],
+          "type": {
+            "kind": "LIST",
+            "name": null,
+            "ofType": {
+              "kind": "OBJECT",
+              "name": "Expansion",
+              "ofType": null
+            }
+          }
+        },
+        {
+          "name": "region",
+          "description": "Obtain a specific region by its ID.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Required. The ID of a single region to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Region",
+            "ofType": null
+          }
+        },
+        {
+          "name": "regions",
+          "description": "The set of all regions supported by the site.",
+          "args": [],
+          "type": {
+            "kind": "LIST",
+            "name": null,
+            "ofType": {
+              "kind": "OBJECT",
+              "name": "Region",
+              "ofType": null
+            }
+          }
+        },
+        {
+          "name": "server",
+          "description": "Obtain a specific server either by id or by slug and region.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Optional. The ID of a single server to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            {
+              "name": "region",
+              "description": "Optional. The compact English abbreviation for a specific region (e.g., \"US\"). Use in conjunction with the server slug to retrieve a single server.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            {
+              "name": "slug",
+              "description": "Optional. A server slug. Use in conjunction with the server region to retrieve a single server.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Server",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subregion",
+          "description": "Obtain a specific subregion by its ID.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Required. The ID of a single subregion to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Subregion",
+            "ofType": null
+          }
+        },
+        {
+          "name": "zone",
+          "description": "Obtain a specific zone by its ID.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Required. The ID of a specific zone.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "Zone",
+            "ofType": null
+          }
+        },
+        {
+          "name": "zones",
+          "description": "Obtain a set of all zones supported by the site.",
+          "args": [
+            {
+              "name": "expansion_id",
+              "description": "Optional. The ID of a specific expansion. If omitted, the zones from all expansions will be retrieved.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "LIST",
+            "name": null,
+            "ofType": {
+              "kind": "OBJECT",
+              "name": "Zone",
+              "ofType": null
+            }
+          }
+        }
+      ]
+    },
+    "rateLimitData": {
+      "name": "RateLimitData",
+      "description": "A way to obtain your current rate limit usage.",
+      "fields": [
+        {
+          "name": "limitPerHour",
+          "description": "The total amount of points this API key can spend per hour.",
+          "args": [],
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            }
+          }
+        },
+        {
+          "name": "pointsSpentThisHour",
+          "description": "The total amount of points spent during this hour.",
+          "args": [],
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            }
+          }
+        },
+        {
+          "name": "pointsResetIn",
+          "description": "The number of seconds remaining until the points reset.",
+          "args": [],
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            }
+          }
+        }
+      ]
+    },
+    "userData": {
+      "name": "UserData",
+      "description": "The user data object contains basic information about users and lets you retrieve specific users (or the current user if using the user endpoint).",
+      "fields": [
+        {
+          "name": "user",
+          "description": "Obtain a specific user by id.",
+          "args": [
+            {
+              "name": "id",
+              "description": "Required. Specify a single user ID to retrieve.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            }
+          ],
+          "type": {
+            "kind": "OBJECT",
+            "name": "User",
+            "ofType": null
+          }
+        },
+        {
+          "name": "currentUser",
+          "description": "Obtain the current user (only works with user endpoint).",
+          "args": [],
+          "type": {
+            "kind": "OBJECT",
+            "name": "User",
+            "ofType": null
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "data": {
+    "__schema": {
+      "queryType": {
+        "name": "Query",
+        "fields": [
+          {
+            "name": "characterData",
+            "description": "Obtain the character data object that allows the retrieval of individual characters or filtered collections of characters.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "CharacterData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "gameData",
+            "description": "Obtain the game data object that holds collections of static data such as abilities, achievements, classes, items, NPCs, etc..",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "GameData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "guildData",
+            "description": "Obtain the guild data object that allows the retrieval of individual guilds or filtered collections of guilds.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "GuildData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "progressRaceData",
+            "description": "Obtain information about an ongoing world first or realm first race. Inactive when no race is occurring. This data only updates once every 30 seconds, so you do not need to fetch this information more often than that.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ProgressRaceData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "rateLimitData",
+            "description": "Obtain the rate limit data object to see how many points have been spent by this key.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "RateLimitData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "reportData",
+            "description": "Obtain the report data object that allows the retrieval of individual reports or filtered collections of reports by guild or by user.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ReportData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "userData",
+            "description": "Obtain the user object that allows the retrieval of the authorized user's id and username.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "UserData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "worldData",
+            "description": "Obtain the world data object that holds collections of data such as all expansions, regions, subregions, servers, dungeon/raid zones, and encounters.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "WorldData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "reportComponentData",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ReportComponentData",
+              "ofType": null
+            }
+          },
+          {
+            "name": "systemReportComponentData",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ReportComponentData",
+              "ofType": null
+            }
+          }
+        ]
+      },
+      "mutationType": null,
+      "subscriptionType": null,
+      "directives": [
+        {
+          "name": "include",
+          "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
+          "locations": [
+            "FIELD",
+            "FRAGMENT_SPREAD",
+            "INLINE_FRAGMENT"
+          ]
+        },
+        {
+          "name": "skip",
+          "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
+          "locations": [
+            "FIELD",
+            "FRAGMENT_SPREAD",
+            "INLINE_FRAGMENT"
+          ]
+        },
+        {
+          "name": "deprecated",
+          "description": "Marks an element of a GraphQL schema as no longer supported.",
+          "locations": [
+            "FIELD_DEFINITION",
+            "ENUM_VALUE",
+            "ARGUMENT_DEFINITION",
+            "INPUT_FIELD_DEFINITION"
+          ]
+        },
+        {
+          "name": "specifiedBy",
+          "description": "Exposes a URL that specifies the behavior of this scalar.",
+          "locations": [
+            "SCALAR"
+          ]
+        },
+        {
+          "name": "oneOf",
+          "description": "Indicates that an Input Object is a OneOf Input Object (and thus requires exactly one of its fields be provided).",
+          "locations": [
+            "INPUT_OBJECT"
+          ]
+        }
+      ]
+    }
+  }
+}
