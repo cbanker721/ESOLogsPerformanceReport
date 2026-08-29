@@ -118,6 +118,26 @@
       padding: 0 4px;
       border-radius: 4px;
     }
+
+    a.report-link {
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a.report-link:hover {
+      text-decoration: underline;
+    }
+
+    .title-main {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .title-sub {
+      font-size: 0.85rem;
+      color: #475569;
+    }
   </style>
 </head>
 <body>
@@ -139,10 +159,9 @@
       <table>
         <thead>
           <tr>
+            <th>Title</th>
             <th>Start</th>
             <th>End</th>
-            <th>Code</th>
-            <th>Title</th>
           </tr>
         </thead>
         <tbody id="rows"></tbody>
@@ -309,11 +328,18 @@
       rowsEl.innerHTML = "";
       for (const r of reports) {
         const tr = document.createElement("tr");
+        const reportCode = r.code || "";
+        const reportUrl = reportCode ? `https://www.esologs.com/reports/${reportCode}` : "";
+        const reportCell = reportCode
+          ? `<a class="report-link" href="${reportUrl}" target="_blank" rel="noopener noreferrer">Link</a>`
+          : "-";
         tr.innerHTML = `
+          <td>
+            <div class="title-main">${r.title || "-"}</div>
+            <div class="title-sub">${reportCell}</div>
+          </td>
           <td>${formatTime(r.startTime)}</td>
           <td>${formatTime(r.endTime)}</td>
-          <td>${r.code || "-"}</td>
-          <td>${r.title || "-"}</td>
         `;
         rowsEl.appendChild(tr);
       }
