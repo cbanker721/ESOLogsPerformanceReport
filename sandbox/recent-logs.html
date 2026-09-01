@@ -162,6 +162,7 @@
             <th>Title</th>
             <th>Start</th>
             <th>End</th>
+            <th>Details</th>
           </tr>
         </thead>
         <tbody id="rows"></tbody>
@@ -173,6 +174,8 @@
     src="../config.local.js"
     onerror="document.getElementById('status').textContent='Config load error: could not load ../config.local.js. If serving only sandbox, change server root to the repository root.'"
   ></script>
+  <script src="./esologs-domain.js"></script>
+  <script src="./esologs-client.js"></script>
   <script>
     const statusEl = document.getElementById("status");
     const metaEl = document.getElementById("meta");
@@ -180,11 +183,6 @@
     const userIdInputEl = document.getElementById("userIdInput");
     const runButtonEl = document.getElementById("runButton");
 
-    const PLACEHOLDER_TOKENS = new Set(["REPLACE_WITH_ACCESS_TOKEN", "YOUR_ACCESS_TOKEN"]);
-    const PLACEHOLDER_CLIENTS = new Set(["REPLACE_WITH_CLIENT_ID", "YOUR_CLIENT_ID", "REPLACE_WITH_CLIENT_SECRET", "YOUR_CLIENT_SECRET"]);
-
-    const DEFAULT_API_URL = "https://www.esologs.com/api/v2/client";
-    const DEFAULT_OAUTH_URL = "https://www.esologs.com/oauth/token";
     const LIMIT = 50;
 
     const query = `
@@ -210,136 +208,54 @@
       statusEl.textContent = message;
     }
 
-    function formatTime(ms) {
-      if (!ms) {
-        return "-";
-      }
-      const d = new Date(ms);
-      if (Number.isNaN(d.getTime())) {
-        return "-";
-      }
-      return d.toLocaleString();
+    function getUserIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("userId") || "";
     }
 
-    function loadConfig() {
-      const config = window.ESOLOGS_LOCAL_CONFIG;
-      if (!config) {
-        throw new Error("Missing window.ESOLOGS_LOCAL_CONFIG. Check config.local.js");
-      }
-
-      config.apiUrl = config.apiUrl || DEFAULT_API_URL;
-      config.oauthUrl = config.oauthUrl || DEFAULT_OAUTH_URL;
-      config.tokenType = config.tokenType || "Bearer";
-
-      const hasAccessToken = Boolean(config.accessToken) && !PLACEHOLDER_TOKENS.has(config.accessToken);
-      const hasClientCredentials = Boolean(config.clientId)
-        && Boolean(config.clientSecret)
-        && !PLACEHOLDER_CLIENTS.has(config.clientId)
-        && !PLACEHOLDER_CLIENTS.has(config.clientSecret);
-
-      if (!hasAccessToken && !hasClientCredentials) {
-        throw new Error("Provide either accessToken or both clientId and clientSecret in config.local.js");
-      }
-
-      config.hasAccessToken = hasAccessToken;
-      config.hasClientCredentials = hasClientCredentials;
-      return config;
-    }
-
-    async function fetchAccessToken(config) {
-      const body = new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: config.clientId,
-        client_secret: config.clientSecret
-      });
-
-      const response = await fetch(config.oauthUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body
-      });
-
-      const raw = await response.text();
-      let data;
-
-      try {
-        data = JSON.parse(raw);
-      } catch {
-        data = { raw };
-      }
-
-      if (!response.ok || !data.access_token) {
-        throw new Error(`OAuth request failed (${response.status}): ${JSON.stringify(data, null, 2)}`);
-      }
-
-      config.accessToken = data.access_token;
-      config.tokenType = data.token_type || config.tokenType || "Bearer";
-      config.hasAccessToken = true;
-      return config.accessToken;
-    }
-
-    async function resolveAccessToken(config) {
-      if (config.hasAccessToken) {
-        return config.accessToken;
-      }
-
-      if (!config.hasClientCredentials) {
-        throw new Error("No usable access token or client credentials available.");
-      }
-
-      setStatus("Acquiring access token...");
-      return fetchAccessToken(config);
+    function setUrlUserId(userId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("userId", String(userId));
+      history.replaceState({}, "", url);
     }
 
     async function fetchRecentLogs(config, userId) {
-      const accessToken = await resolveAccessToken(config);
-      const response = await fetch(config.apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${config.tokenType} ${accessToken}`
+      const payload = await window.ESOLogsClient.query(
+        config,
+        query,
+        {
+          userID: userId,
+          limit: LIMIT,
+          page: 1
         },
-        body: JSON.stringify({
-          query,
-          variables: {
-            userID: userId,
-            limit: LIMIT,
-            page: 1
-          }
-        })
-      });
-
-      const raw = await response.text();
-      let payload;
-      try {
-        payload = JSON.parse(raw);
-      } catch {
-        payload = { raw };
-      }
-
-      if (!response.ok || payload.errors) {
-        throw new Error(`GraphQL request failed (${response.status}): ${JSON.stringify(payload, null, 2)}`);
-      }
+        setStatus
+      );
 
       return ((payload.data || {}).reportData || {}).reports || {};
     }
 
     function renderRows(reports) {
       rowsEl.innerHTML = "";
+      const userId = Number.parseInt(userIdInputEl.value, 10);
       for (const r of reports) {
         const tr = document.createElement("tr");
-        const reportCode = r.code || "";
-        const reportUrl = reportCode ? `https://www.esologs.com/reports/${reportCode}` : "";
-        const reportCell = reportCode
-          ? `<a class="report-link" href="${reportUrl}" target="_blank" rel="noopener noreferrer">Link</a>`
+        const externalCell = r.externalReportUrl
+          ? `<a class="report-link" href="${r.externalReportUrl}" target="_blank" rel="noopener noreferrer">Link</a>`
+          : "-";
+        const localReportUrl = r.code
+          ? `./report.html?code=${encodeURIComponent(r.code)}${Number.isFinite(userId) && userId > 0 ? `&userId=${encodeURIComponent(userId)}` : ""}`
+          : "";
+        const localCell = localReportUrl
+          ? `<a class="report-link" href="${localReportUrl}">Open</a>`
           : "-";
         tr.innerHTML = `
           <td>
             <div class="title-main">${r.title || "-"}</div>
-            <div class="title-sub">${reportCell}</div>
+            <div class="title-sub">${externalCell}</div>
           </td>
-          <td>${formatTime(r.startTime)}</td>
-          <td>${formatTime(r.endTime)}</td>
+          <td>${r.startTimeText}</td>
+          <td>${r.endTimeText}</td>
+          <td>${localCell}</td>
         `;
         rowsEl.appendChild(tr);
       }
@@ -348,11 +264,16 @@
     function init() {
       let config;
       try {
-        config = loadConfig();
+        config = window.ESOLogsClient.loadConfig();
       } catch (error) {
         setStatus(`Config error: ${error.message}`);
         runButtonEl.disabled = true;
         return;
+      }
+
+      const initialUserId = getUserIdFromUrl();
+      if (initialUserId) {
+        userIdInputEl.value = initialUserId;
       }
 
       setStatus("Configuration loaded. Click 'Load Recent Logs' to run.");
@@ -370,11 +291,13 @@
 
         try {
           const reportsBlock = await fetchRecentLogs(config, userId);
-          const rows = Array.isArray(reportsBlock.data) ? reportsBlock.data.slice() : [];
+          const list = window.ESOLogsDomain.reportListFromApi(reportsBlock);
+          const rows = list.reports.slice();
           rows.sort((a, b) => (b.startTime || 0) - (a.startTime || 0));
           renderRows(rows);
+          setUrlUserId(userId);
 
-          metaEl.textContent = `userId=${userId} requested=${LIMIT} returned=${rows.length} total=${reportsBlock.total} page=${reportsBlock.current_page} per_page=${reportsBlock.per_page} has_more_pages=${reportsBlock.has_more_pages}`;
+          metaEl.textContent = `userId=${userId} requested=${LIMIT} returned=${rows.length} total=${list.total} page=${list.currentPage} per_page=${list.perPage} has_more_pages=${list.hasMorePages}`;
           setStatus("Request completed.");
         } catch (error) {
           rowsEl.innerHTML = "";
@@ -384,6 +307,10 @@
           runButtonEl.disabled = false;
         }
       });
+
+      if (initialUserId) {
+        runButtonEl.click();
+      }
     }
 
     try {

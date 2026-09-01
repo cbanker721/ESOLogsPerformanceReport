@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESO Logs Report Metadata</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f5f8fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.35rem;
+    }
+
+    .small {
+      color: #4b5563;
+      font-size: 0.92rem;
+    }
+
+    .status {
+      margin: 10px 0 14px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    input[type="text"] {
+      width: 320px;
+      max-width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      padding: 9px 14px;
+      background: #2563eb;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .metadata {
+      margin-top: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .section-title {
+      margin: 18px 0 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .fight-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .fight-cell {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: inset 0 0 0 1px #dbe4ee;
+      min-height: 92px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .fight-cell.clear {
+      background: #dcfce7;
+      box-shadow: inset 0 0 0 1px #86efac;
+    }
+
+    .fight-cell.is-empty {
+      box-shadow: inset 0 0 0 1px transparent;
+      background: transparent;
+      min-height: 0;
+      padding: 0;
+    }
+
+    .fight-pull {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .fight-name {
+      font-size: 0.94rem;
+      font-weight: 700;
+      color: #1f2937;
+      line-height: 1.2;
+      margin-top: 4px;
+    }
+
+    .fight-meta {
+      font-size: 0.86rem;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    .fight-result {
+      margin-top: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .fight-result.clear {
+      color: #166534;
+    }
+
+    .fight-result.wipe {
+      color: #991b1b;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .row:first-child {
+      border-top: 0;
+    }
+
+    .k,
+    .v {
+      padding: 10px;
+    }
+
+    .k {
+      background: #f8fafc;
+      font-weight: 700;
+    }
+
+    a {
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .nav {
+      margin-top: 8px;
+    }
+
+    @media (max-width: 700px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .k {
+        border-bottom: 1px solid #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Report Metadata (POC)</h1>
+    <p class="small">Enter a report code to fetch metadata. You can navigate here from the recent logs page.</p>
+    <div class="nav"><a href="./recent-logs.html">Back to Recent Logs</a></div>
+
+    <div id="status" class="status">Loading configuration...</div>
+
+    <div class="controls">
+      <label for="reportCodeInput">Report Code</label>
+      <input id="reportCodeInput" type="text" placeholder="e.g. c2zPF7X1Bt9a3jC6" />
+      <button id="loadButton" type="button">Load Report Metadata</button>
+    </div>
+
+    <div id="metadata" class="metadata"></div>
+
+    <div class="section-title" id="veteranHardModeTitle">Veteran/Hard Mode Fights</div>
+    <div id="veteranHardModeFightGrid" class="fight-grid"></div>
+
+    <div class="section-title" id="trashTitle">Trash Fights</div>
+    <div id="trashFightGrid" class="fight-grid"></div>
+  </div>
+
+  <script
+    src="../config.local.js"
+    onerror="document.getElementById('status').textContent='Config load error: could not load ../config.local.js. If serving only sandbox, change server root to the repository root.'"
+  ></script>
+  <script src="./esologs-domain.js"></script>
+  <script src="./esologs-client.js"></script>
+  <script>
+    const statusEl = document.getElementById("status");
+    const metadataEl = document.getElementById("metadata");
+    const veteranHardModeTitleEl = document.getElementById("veteranHardModeTitle");
+    const trashTitleEl = document.getElementById("trashTitle");
+    const veteranHardModeFightGridEl = document.getElementById("veteranHardModeFightGrid");
+    const trashFightGridEl = document.getElementById("trashFightGrid");
+    const reportCodeInputEl = document.getElementById("reportCodeInput");
+    const loadButtonEl = document.getElementById("loadButton");
+    const backLinkEl = document.querySelector(".nav a");
+
+    const query = `
+      query ReportMetadata($code: String!) {
+        reportData {
+          report(code: $code) {
+            code
+            title
+            startTime
+            endTime
+            visibility
+            revision
+            segments
+            exportedSegments
+            owner { name }
+            guild { name }
+            guildTag { name }
+            region { name }
+            zone { name }
+            fights {
+              id
+              name
+              encounterID
+              difficulty
+              kill
+              startTime
+              endTime
+            }
+            archiveStatus {
+              isArchived
+              isAccessible
+              archiveDate
+            }
+          }
+        }
+      }
+    `;
+
+    function setStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function renderMetadata(meta) {
+      const rows = [
+        ["Title", meta.title],
+        ["Report Code", meta.code || "-"],
+        ["Start Time", meta.startTimeText],
+        ["End Time", meta.endTimeText],
+        ["Visibility", meta.visibility],
+        ["Revision", meta.revision],
+        ["Segments", meta.segments],
+        ["Exported Segments", meta.exportedSegments],
+        ["Owner", meta.owner],
+        ["Guild", meta.guild],
+        ["Guild Tag", meta.guildTag],
+        ["Region", meta.region],
+        ["Zone", meta.zone],
+        ["Archived", meta.archived],
+        ["Archive Accessible By User", meta.archiveAccessible],
+        ["Archive Date", meta.archiveDate],
+        ["External Report", meta.externalReportUrl ? `<a href="${meta.externalReportUrl}" target="_blank" rel="noopener noreferrer">Open in ESO Logs</a>` : "-"]
+      ];
+
+      metadataEl.innerHTML = rows.map(([k, v]) => `
+        <div class="row">
+          <div class="k">${k}</div>
+          <div class="v">${v}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderFightGrid(gridEl, fights) {
+      gridEl.innerHTML = "";
+      const encounterGroups = window.ESOLogsDomain.groupFightsByEncounterThenDifficulty(fights);
+      let pullNumber = 0;
+
+      for (const group of encounterGroups) {
+        for (const difficultyGroup of group.difficultyGroups) {
+          for (const fight of difficultyGroup.fights) {
+            pullNumber += 1;
+            const isClear = fight.kill === "true";
+            const cell = document.createElement("div");
+            cell.className = isClear ? "fight-cell clear" : "fight-cell";
+            cell.innerHTML = `
+              <div class="fight-pull">Pull #${pullNumber}</div>
+              <div class="fight-name">${fight.name}</div>
+              <div class="fight-meta">Start: ${fight.startTimeText}</div>
+              <div class="fight-meta">Duration: ${fight.durationText}</div>
+              <div class="fight-result ${isClear ? "clear" : "wipe"}">${isClear ? "Clear" : "Wipe"}</div>
+            `;
+            gridEl.appendChild(cell);
+          }
+        }
+      }
+
+      const remainder = fights.length % 8;
+      if (remainder !== 0) {
+        const emptyCells = 8 - remainder;
+        for (let index = 0; index < emptyCells; index += 1) {
+          const emptyCell = document.createElement("div");
+          emptyCell.className = "fight-cell is-empty";
+          gridEl.appendChild(emptyCell);
+        }
+      }
+    }
+
+    function renderFights(fights) {
+      const grouped = window.ESOLogsDomain.segregateFights(fights);
+      veteranHardModeTitleEl.textContent = `Veteran/Hard Mode Fights (${grouped.veteranOrHardMode.length})`;
+      trashTitleEl.textContent = `Trash Fights (${grouped.trash.length})`;
+
+      if (grouped.veteranOrHardMode.length === 0) {
+        veteranHardModeFightGridEl.innerHTML = "<div class=\"fight-cell is-empty\">No veteran or hard mode fights found for this report.</div>";
+      } else {
+        renderFightGrid(veteranHardModeFightGridEl, grouped.veteranOrHardMode);
+      }
+
+      if (grouped.trash.length === 0) {
+        trashFightGridEl.innerHTML = "<div class=\"fight-cell is-empty\">No trash fights found for this report.</div>";
+      } else {
+        renderFightGrid(trashFightGridEl, grouped.trash);
+      }
+    }
+
+    function getCodeFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("code") || "";
+    }
+
+    function getUserIdFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("userId") || "";
+    }
+
+    async function fetchReportMetadata(config, code) {
+      const payload = await window.ESOLogsClient.query(
+        config,
+        query,
+        { code },
+        setStatus
+      );
+
+      return ((payload.data || {}).reportData || {}).report || null;
+    }
+
+    function setUrlCode(code) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("code", code);
+      history.replaceState({}, "", url);
+    }
+
+    function updateBackLink(userId) {
+      if (!backLinkEl) {
+        return;
+      }
+
+      backLinkEl.href = userId
+        ? `./recent-logs.html?userId=${encodeURIComponent(userId)}`
+        : "./recent-logs.html";
+    }
+
+    function init() {
+      let config;
+      try {
+        config = window.ESOLogsClient.loadConfig();
+      } catch (error) {
+        setStatus(`Config error: ${error.message}`);
+        loadButtonEl.disabled = true;
+        return;
+      }
+
+      const initialCode = getCodeFromUrl();
+      const initialUserId = getUserIdFromUrl();
+      if (initialCode) {
+        reportCodeInputEl.value = initialCode;
+      }
+      updateBackLink(initialUserId);
+
+      setStatus("Configuration loaded. Enter a report code and click Load Report Metadata.");
+
+      loadButtonEl.addEventListener("click", async () => {
+        const code = reportCodeInputEl.value.trim();
+        if (!code) {
+          setStatus("Report code is required.");
+          return;
+        }
+
+        loadButtonEl.disabled = true;
+        setStatus("Running query...");
+
+        try {
+          const rawReport = await fetchReportMetadata(config, code);
+          if (!rawReport) {
+            metadataEl.innerHTML = "";
+            veteranHardModeFightGridEl.innerHTML = "";
+            trashFightGridEl.innerHTML = "";
+            setStatus("No report found for this code.");
+            return;
+          }
+
+          const report = window.ESOLogsDomain.reportMetadataFromApi(rawReport);
+          const fights = window.ESOLogsDomain.reportFightsFromApi(rawReport.fights, rawReport.startTime);
+          renderMetadata(report);
+          renderFights(fights);
+          setUrlCode(code);
+          setStatus("Request completed.");
+        } catch (error) {
+          metadataEl.innerHTML = "";
+          veteranHardModeFightGridEl.innerHTML = "";
+          trashFightGridEl.innerHTML = "";
+          setStatus(error.message || String(error));
+        } finally {
+          loadButtonEl.disabled = false;
+        }
+      });
+
+      if (initialCode) {
+        loadButtonEl.click();
+      }
+    }
+
+    try {
+      init();
+    } catch (error) {
+      setStatus(`Startup error: ${error.message || String(error)}`);
+      loadButtonEl.disabled = true;
+    }
+  </script>
+</body>
+</html>
